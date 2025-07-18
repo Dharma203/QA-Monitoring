@@ -78,13 +78,11 @@ Aplikasi berbasis **Next.js 15** yang digunakan untuk mendata aktivitas layanan,
    git clone https://github.com/username/qa-monitoring.git
    cd qa-monitoring
    
-3. Install dependencies:
-
-  ```bash
-  npm install
+2. Install dependencies:
+    ```bash
+    npm install
 
 
 3. Jalankan server development:
-
-  ```bash
-  npm run dev
+    ```bash
+   npm run dev
