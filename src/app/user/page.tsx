@@ -28,6 +28,7 @@ export default function UserPage() {
   const [filter, setFilter] = useState({
     kd_ktr: "",
     kd_group: "",
+    petugas: "",
     startDate: "",
     endDate: "",
   });
@@ -107,7 +108,9 @@ export default function UserPage() {
       (!filter.kd_ktr ||
         d.kd_ktr?.toLowerCase() === filter.kd_ktr.toLowerCase()) &&
       (!filter.kd_group ||
-        d.kd_group?.toLowerCase() === filter.kd_group.toLowerCase());
+        d.kd_group?.toLowerCase() === filter.kd_group.toLowerCase()) &&
+      (!filter.petugas ||
+        d.petugas?.toLowerCase() === filter.petugas.toLowerCase());
 
     return matchSearch && matchFilter;
   });
@@ -170,6 +173,7 @@ export default function UserPage() {
                   setFilter({
                     kd_ktr: "",
                     kd_group: "",
+                    petugas: "",
                     startDate: "",
                     endDate: "",
                   });

@@ -96,6 +96,7 @@ export default function DropdownManagementPage() {
                   <option value="atasan">Atasan</option>
                   <option value="kd_ktr">Kode Kantor</option>
                   <option value="kd_group">Kode Group</option>
+                  <option value="petugas">Petugas</option>
                 </select>
               </div>
 
@@ -132,6 +133,7 @@ export default function DropdownManagementPage() {
                   "atasan",
                   "kd_ktr",
                   "kd_group",
+                  "petugas",
                 ].map((type) => (
                   <div
                     key={type}

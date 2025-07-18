@@ -19,6 +19,7 @@ export default function FilterDropdownBS({ onFilter, onReset }: FilterProps) {
   const [filter, setFilter] = useState({
     kd_ktr: "",
     kd_group: "",
+    petugas: "",
     startDate: "",
     endDate: "",
   });
@@ -61,6 +62,7 @@ export default function FilterDropdownBS({ onFilter, onReset }: FilterProps) {
     const resetState = {
       kd_ktr: "",
       kd_group: "",
+      petugas: "",
       startDate: "",
       endDate: "",
     };
@@ -101,7 +103,7 @@ export default function FilterDropdownBS({ onFilter, onReset }: FilterProps) {
             }}
             className="absolute z-50 mt-2 right-0 bg-white border rounded-lg shadow-lg p-4 w-72 space-y-3"
           >
-            {["kd_ktr", "kd_group"].map((key) => (
+            {["kd_ktr", "kd_group", "petugas"].map((key) => (
               <motion.div
                 key={key}
                 variants={{

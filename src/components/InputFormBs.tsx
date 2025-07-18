@@ -113,11 +113,20 @@ export default function InputFormBS({
               {...register("jabatan")}
               className="border p-2"
             />
-            <input
-              placeholder="Petugas"
+            <select
               {...register("petugas")}
               className="border p-2"
-            />
+              defaultValue=""
+            >
+              <option value="" disabled hidden>
+                Petugas
+              </option>
+              {options.petugas?.map((val) => (
+                <option key={val} value={val}>
+                  {val}
+                </option>
+              ))}
+            </select>
             <input
               type="date"
               {...register("tanggal_proses")}

@@ -109,11 +109,20 @@ export default function EditModalBS({
             {...register("jabatan")}
             className="border p-2"
           />
-          <input
-            placeholder="Petugas"
+          <select
             {...register("petugas")}
             className="border p-2"
-          />
+            defaultValue={data.petugas || ""}
+          >
+            <option value="" disabled hidden>
+              Petugas
+            </option>
+            {options.petugas?.map((val) => (
+              <option key={val} value={val}>
+                {val}
+              </option>
+            ))}
+          </select>
           <input
             type="date"
             {...register("tanggal_proses")}
