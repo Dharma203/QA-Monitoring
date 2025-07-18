@@ -1,17 +1,17 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { exportToExcel } from "@/app/lib/excel";
-import { exportToPDF } from "@/app/lib/pdf";
-import { DataEntry } from "@/app/types/data";
+import { exportToExcel } from "@/app/lib/excelbs";
+import { exportToPDF } from "@/app/lib/pdfbs";
+import { UserEntryBS } from "@/app/types/user";
 import { AnimatePresence, motion } from "framer-motion";
 
 export default function ExportButtons({
   allData,
   filteredData,
 }: {
-  allData: DataEntry[];
-  filteredData: DataEntry[];
+  allData: UserEntryBS[];
+  filteredData: UserEntryBS[];
 }) {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);

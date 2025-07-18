@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { parseExcel, sanitizeExcelData } from "@/app/lib/excel";
+import { parseExcel, sanitizeExcelData } from "@/app/lib/excelbs";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function UploadButton({ onUpload }: { onUpload: () => void }) {
+export default function UploadButtonBS({ onUpload }: { onUpload: () => void }) {
   const [showModal, setShowModal] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -28,7 +28,7 @@ export default function UploadButton({ onUpload }: { onUpload: () => void }) {
         const penginput = user.username || "Tidak diketahui";
         const role = user.role || "Tidak diketahui";
 
-        await fetch("/api/data", {
+        await fetch("/api/user", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...item, penginput, role }),
@@ -72,14 +72,12 @@ export default function UploadButton({ onUpload }: { onUpload: () => void }) {
               <h2 className="text-xl font-bold text-center text-blue-900 mb-4">
                 Upload File Excel
               </h2>
-
               <input
                 type="file"
                 accept=".xlsx, .xls"
                 onChange={handleFileChange}
                 className="w-full border rounded px-3 py-2 mb-4 text-gray-700"
               />
-
               <div className="flex justify-end gap-2">
                 <button
                   onClick={() => setShowModal(false)}

@@ -4,6 +4,7 @@ import {
   LogOut,
   UserCircle,
   Users,
+  User2,
   Home,
   Database,
   Settings,
@@ -30,13 +31,13 @@ export default function Sidebar() {
     <>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="sm:hidden fixed top-4 left-4 z-50 p-2 bg-purple-900 text-white rounded-md"
+        className="sm:hidden fixed top-4 left-4 z-50 p-2 bg-blue-900 text-white rounded-md"
       >
         {isOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
       <aside
         className={clsx(
-          "fixed h-full pt-23 w-64 bg-purple-900 flex flex-col transition-transform duration-300 py-6 px-4",
+          "fixed h-full pt-23 w-64 bg-blue-900 flex flex-col transition-transform duration-300 py-6 px-4 text-white",
           {
             "translate-x-0": isOpen,
             "-translate-x-full sm:translate-x-0": !isOpen,
@@ -56,17 +57,39 @@ export default function Sidebar() {
           <nav className="mt-6 px-4 space-y-4 text-sm font-medium">
             <Link
               href="/dashboard"
-              className="block border-b border-white/30 pb-2 hover:text-gray-200 flex items-center gap-2"
+              className={clsx(
+                "block border-b border-white/30 pb-2 flex items-center gap-2",
+                pathname === "/dashboard"
+                  ? "text-[#F26A21]" // oranye untuk aktif
+                  : "hover:text-[#ffffff]" 
+              )}
             >
               <Home size={16} />
               Beranda
             </Link>
             <Link
               href="/data"
-              className="block border-b border-white/30 pb-2 hover:text-gray-200 flex items-center gap-2"
+              className={clsx(
+                "block border-b border-white/30 pb-2 flex items-center gap-2",
+                pathname === "/data"
+                  ? "text-[#F26A21]" // oranye untuk aktif
+                  : "hover:text-[#ffffff]" 
+              )}
             >
               <Database size={16} />
-              Data
+              Data QA
+            </Link>
+            <Link
+              href="/user"
+              className={clsx(
+                "block border-b border-white/30 pb-2 flex items-center gap-2",
+                pathname === "/user"
+                  ? "text-[#F26A21]" // oranye untuk aktif
+                  : "hover:text-[#ffffff]" 
+              )}
+            >
+              <Users size={16} />
+              User BS
             </Link>
 
             {/* Hanya Super Admin */}
@@ -74,14 +97,24 @@ export default function Sidebar() {
               <>
                 <Link
                   href="/admin"
-                  className="block border-b border-white/30 pb-2 hover:text-gray-200 flex items-center gap-2"
+                  className={clsx(
+                    "block border-b border-white/30 pb-2 flex items-center gap-2",
+                    pathname === "/admin"
+                      ? "text-[#F26A21]" // oranye untuk aktif
+                      : "hover:text-[#ffffff]" 
+                  )}
                 >
-                  <Users size={16} />
+                  <User2 size={16} />
                   Manajemen Admin
                 </Link>
                 <Link
                   href="/admin/options"
-                  className="block border-b border-white/30 pb-2 hover:text-gray-200 flex items-center gap-2"
+                  className={clsx(
+                    "block border-b border-white/30 pb-2 flex items-center gap-2",
+                    pathname === "/admin/option"
+                      ? "text-[#F26A21]" // oranye untuk aktif
+                      : "hover:text-[#ffffff]" 
+                  )}
                 >
                   <Settings size={16} />
                   Manajemen Dropdown

@@ -2,15 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { DataEntry } from "@/app/types/data";
-import { useAuth } from "@/app/context/AuthContext"; // pastikan path sesuai
+import { UserEntryBS } from "@/app/types/user";
+import { useAuth } from "@/app/context/AuthContext";
 
-export default function InputForm({
+export default function InputFormBS({
   onClose,
   onSave,
 }: {
   onClose: () => void;
-  onSave: (newData: DataEntry) => void;
+  onSave: (newData: UserEntryBS) => void;
 }) {
   const { register, handleSubmit, reset } = useForm();
   const [options, setOptions] = useState<{ [key: string]: string[] }>({});
@@ -40,7 +40,7 @@ export default function InputForm({
       role: user?.role || "Tidak diketahui",
     };
 
-    const res = await fetch("/api/data", {
+    const res = await fetch("/api/user", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -65,47 +65,20 @@ export default function InputForm({
           className="space-y-4 bg-white p-6 rounded shadow"
         >
           <div className="grid grid-cols-2 gap-4">
-            <input
-              type="date"
-              {...register("tanggal_form")}
-              className="border p-2"
-            />
-            <input
-              type="date"
-              {...register("tanggal_eskalasi")}
-              className="border p-2"
-            />
-
             <select
-              {...register("keterangan")}
+              {...register("kd_ktr")}
               className="border p-2"
               defaultValue=""
             >
               <option value="" disabled hidden>
-                Pilih Keterangan
+                Kode Kantor
               </option>
-              {options.keterangan?.map((val) => (
+              {options.kd_ktr?.map((val) => (
                 <option key={val} value={val}>
                   {val}
                 </option>
               ))}
             </select>
-
-            <select
-              {...register("sistem")}
-              className="border p-2"
-              defaultValue=""
-            >
-              <option value="" disabled hidden>
-                Pilih Sistem
-              </option>
-              {options.sistem?.map((val) => (
-                <option key={val} value={val}>
-                  {val}
-                </option>
-              ))}
-            </select>
-
             <input
               placeholder="Code User"
               {...register("code_user")}
@@ -116,36 +89,40 @@ export default function InputForm({
               {...register("user")}
               className="border p-2"
             />
-
             <select
-              {...register("penerima")}
+              {...register("kd_group")}
               className="border p-2"
               defaultValue=""
             >
               <option value="" disabled hidden>
-                Pilih Penerima
+                Kode Group
               </option>
-              {options.penerima?.map((val) => (
+              {options.kd_group?.map((val) => (
                 <option key={val} value={val}>
                   {val}
                 </option>
               ))}
             </select>
-
-            <select
-              {...register("atasan")}
+            <input
+              placeholder="Nama"
+              {...register("nama")}
               className="border p-2"
-              defaultValue=""
-            >
-              <option value="" disabled hidden>
-                Pilih Atasan
-              </option>
-              {options.atasan?.map((val) => (
-                <option key={val} value={val}>
-                  {val}
-                </option>
-              ))}
-            </select>
+            />
+            <input
+              placeholder="Jabatan"
+              {...register("jabatan")}
+              className="border p-2"
+            />
+            <input
+              placeholder="Petugas"
+              {...register("petugas")}
+              className="border p-2"
+            />
+            <input
+              type="date"
+              {...register("tanggal_proses")}
+              className="border p-2"
+            />
           </div>
 
           <div className="flex justify-end mt-6">

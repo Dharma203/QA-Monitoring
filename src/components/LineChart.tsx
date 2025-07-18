@@ -24,7 +24,7 @@ export default function Chart({ data }: Props) {
           <Line
             type="monotone"
             dataKey="value"
-            stroke="#82ca9d"
+            stroke="#F26A21"
             strokeWidth={2}
             dot={{ r: 4 }}
           />
