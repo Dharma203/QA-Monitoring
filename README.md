@@ -73,15 +73,18 @@ Aplikasi berbasis **Next.js 15** yang digunakan untuk mendata aktivitas layanan,
 ## ✅ Cara Menjalankan Proyek
 
 1. Clone repo:
+   
    ```bash
    git clone https://github.com/username/qa-monitoring.git
    cd qa-monitoring
    
-2. Install dependencies:
+3. Install dependencies:
+
   ```bash
   npm install
 
 
 3. Jalankan server development:
+
   ```bash
   npm run dev
