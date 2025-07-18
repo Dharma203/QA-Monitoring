@@ -1,50 +1,50 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { DataEntry } from "../types/data";
-import { parseExcel, sanitizeExcelData } from "../lib/excel";
-import InputForm from "@/components/InputForm";
-import EditModal from "@/components/EditModal";
+import { UserEntryBS } from "../types/user";
+import { parseExcel, sanitizeExcelData } from "../lib/excelbs";
+import InputFormBS from "@/components/InputFormBs";
+import EditModalBS from "@/components/EditModalBs";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { formatDate } from "@/app/lib/date";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import { Search, ChevronRight, ChevronLeft } from "lucide-react";
-import UploadButton from "@/components/UploadButton";
-import ExportButtons from "@/components/ExportButton";
-import InputButton from "@/components/InputButton";
+import UploadButtonBS from "@/components/UploadButtonBS";
+import ExportButtonsBS from "@/components/ExportButtonBS";
+import InputButtonBS from "@/components/InputButtonBS";
 import { AnimatePresence, motion } from "framer-motion";
-import FilterForm from "@/components/FilterButton";
+import FilterFormBS from "@/components/FilterButtonBS";
 
-export default function DataPage() {
-  const [data, setData] = useState<DataEntry[]>([]);
+export default function UserPage() {
+  const [data, setData] = useState<UserEntryBS[]>([]);
   const [search, setSearch] = useState("");
   const [rawSearch, setRawSearch] = useState("");
-  const [editItem, setEditItem] = useState<DataEntry | null>(null);
+  const [editItem, setEditItem] = useState<UserEntryBS | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [jumpPage, setJumpPage] = useState("");
   const [itemsPerPage, setItemsPerPage] = useState(20); //ubah jumlah data per page <<
   const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState({
-    keterangan: "",
-    sistem: "",
-    penerima: "",
-    atasan: "",
+    kd_ktr: "",
+    kd_group: "",
     startDate: "",
     endDate: "",
   });
 
   const fetchData = async () => {
     try {
-      const res = await fetch("/api/data");
+      const res = await fetch("/api/user");
       const json = await res.json();
 
-      const sorted = (json.data || []).sort((a: DataEntry, b: DataEntry) => {
-        return (
-          new Date(b.tanggal_entry).getTime() -
-          new Date(a.tanggal_entry).getTime()
-        );
-      });
+      const sorted = (json.data || []).sort(
+        (a: UserEntryBS, b: UserEntryBS) => {
+          return (
+            new Date(b.tanggal_proses).getTime() -
+            new Date(a.tanggal_proses).getTime()
+          );
+        }
+      );
 
       setData(sorted);
     } catch (err) {
@@ -94,26 +94,20 @@ export default function DataPage() {
   const filtered = data.filter((d) => {
     const q = search.toLowerCase();
     const matchSearch =
-      d.keterangan?.toLowerCase().includes(q) ||
-      d.keterangan_detail?.toLowerCase().includes(q) ||
-      d.sistem?.toLowerCase().includes(q) ||
-      d.user?.toLowerCase().includes(q) ||
-      d.penerima?.toLowerCase().includes(q) ||
-      d.atasan?.toLowerCase().includes(q) ||
-      formatDate(d.tanggal_entry || "").includes(q) ||
-      formatDate(d.tanggal_eskalasi || "").includes(q) ||
-      formatDate(d.tanggal_form || "").includes(q) ||
-      d.code_user?.toLowerCase().includes(q);
+      d.kd_ktr.toLowerCase().includes(q) ||
+      d.code_user.toLowerCase().includes(q) ||
+      d.user.toLowerCase().includes(q) ||
+      d.kd_group.toLowerCase().includes(q) ||
+      d.nama.toLowerCase().includes(q) ||
+      d.jabatan.toLowerCase().includes(q) ||
+      d.petugas.toLowerCase().includes(q) ||
+      formatDate(d.tanggal_proses).includes(q);
 
     const matchFilter =
-      (!filter.keterangan ||
-        d.keterangan?.toLowerCase() === filter.keterangan.toLowerCase()) &&
-      (!filter.sistem ||
-        d.sistem?.toLowerCase() === filter.sistem.toLowerCase()) &&
-      (!filter.penerima ||
-        d.penerima?.toLowerCase() === filter.penerima.toLowerCase()) &&
-      (!filter.atasan ||
-        d.atasan?.toLowerCase() === filter.atasan.toLowerCase());
+      (!filter.kd_ktr ||
+        d.kd_ktr?.toLowerCase() === filter.kd_ktr.toLowerCase()) &&
+      (!filter.kd_group ||
+        d.kd_group?.toLowerCase() === filter.kd_group.toLowerCase());
 
     return matchSearch && matchFilter;
   });
@@ -123,10 +117,10 @@ export default function DataPage() {
 
     const start = new Date(filter.startDate);
     const end = new Date(filter.endDate);
-    end.setHours(23, 59, 59, 999);
+    end.setHours(23, 59, 59, 999); // agar termasuk data sampai akhir hari
 
     return filtered.filter((d) => {
-      const tgl = new Date(d.tanggal_entry);
+      const tgl = new Date(d.tanggal_proses);
       return tgl >= start && tgl <= end;
     });
   };
@@ -135,12 +129,12 @@ export default function DataPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Yakin ingin menghapus data ini?")) return;
-    await fetch(`/api/data/${id}`, { method: "DELETE" });
+    await fetch(`/api/user/${id}`, { method: "DELETE" });
     await fetchData();
   };
 
-  const handleSaveEdit = async (updated: DataEntry) => {
-    await fetch(`/api/data/${updated._id}`, {
+  const handleSaveEdit = async (updated: UserEntryBS) => {
+    await fetch(`/api/user/${updated._id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updated),
@@ -167,17 +161,15 @@ export default function DataPage() {
                   className="outline-none flex-1 text-gray-700 placeholder-gray-400 text-sm bg-transparent"
                 />
               </div>
-              <FilterForm
+              <FilterFormBS
                 onFilter={(newFilter) => {
                   setFilter(newFilter);
                   setCurrentPage(1);
                 }}
                 onReset={() => {
                   setFilter({
-                    keterangan: "",
-                    sistem: "",
-                    penerima: "",
-                    atasan: "",
+                    kd_ktr: "",
+                    kd_group: "",
                     startDate: "",
                     endDate: "",
                   });
@@ -189,17 +181,14 @@ export default function DataPage() {
                 <thead>
                   <tr className="bg-[#F5F5F5]">
                     {[
-                      "Entry",
-                      "Form",
-                      "Eskalasi",
-                      "Keterangan",
-                      "Sistem",
-                      "Code",
+                      "Kode Kantor",
+                      "Code User",
                       "User",
-                      "Penerima",
-                      "Atasan",
-                      "Apps",
-                      "Detail",
+                      "Kode Group",
+                      "Nama",
+                      "Jabatan",
+                      "Petugas",
+                      "Tanggal Proses",
                       "Aksi",
                     ].map((title, idx) => (
                       <th
@@ -219,26 +208,11 @@ export default function DataPage() {
                     )
                     .map((d, index) => (
                       <tr key={index} className="border-t hover:bg-gray-50">
-                        <td className="px-2 py-1 align-top text-center">
-                          {formatDate(d.tanggal_entry)}
-                        </td>
-                        <td className="px-2 py-1 align-top text-center">
-                          {formatDate(d.tanggal_form)}
-                        </td>
-                        <td className="px-2 py-1 align-top text-center">
-                          {formatDate(d.tanggal_eskalasi)}
-                        </td>
                         <td
                           className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
                           style={{ hyphens: "auto", wordBreak: "break-word" }}
                         >
-                          {d.keterangan}
-                        </td>
-                        <td
-                          className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
-                          style={{ hyphens: "auto", wordBreak: "break-word" }}
-                        >
-                          {d.sistem}
+                          {d.kd_ktr}
                         </td>
                         <td
                           className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
@@ -256,25 +230,30 @@ export default function DataPage() {
                           className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
                           style={{ hyphens: "auto", wordBreak: "break-word" }}
                         >
-                          {d.penerima}
+                          {d.kd_group}
                         </td>
                         <td
                           className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
                           style={{ hyphens: "auto", wordBreak: "break-word" }}
                         >
-                          {d.atasan}
+                          {d.nama}
                         </td>
                         <td
                           className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
                           style={{ hyphens: "auto", wordBreak: "break-word" }}
                         >
-                          {d.keterangan_apps}
+                          {d.jabatan}
                         </td>
                         <td
                           className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
                           style={{ hyphens: "auto", wordBreak: "break-word" }}
                         >
-                          {d.keterangan_detail}
+                          {d.petugas}
+                        </td>
+                        <td className="px-2 py-1 align-top text-center">
+                          {d.tanggal_proses
+                            ? formatDate(d.tanggal_proses)
+                            : "-"}
                         </td>
                         <td className="p-2 border-b space-x-2 whitespace-nowrap">
                           <button
@@ -384,12 +363,12 @@ export default function DataPage() {
 
             <div className="flex flex-wrap justify-between items-center gap-4 p-4 bg-[#e9f0ff] rounded-xl">
               <div className="flex gap-2">
-                <UploadButton onUpload={fetchData} />
-                <ExportButtons
+                <UploadButtonBS onUpload={fetchData} />
+                <ExportButtonsBS
                   allData={data}
                   filteredData={getFilteredByDate()}
                 />
-                <InputButton onClick={() => setShowModal(true)} />
+                <InputButtonBS onClick={() => setShowModal(true)} />
               </div>
             </div>
 
@@ -408,7 +387,7 @@ export default function DataPage() {
                     exit={{ y: 50, opacity: 0, scale: 0.9 }}
                     transition={{ type: "spring", stiffness: 300, damping: 25 }}
                   >
-                    <InputForm
+                    <InputFormBS
                       onClose={() => setShowModal(false)}
                       onSave={(newData) => {
                         setData((prev) => [newData, ...prev]);
@@ -434,7 +413,7 @@ export default function DataPage() {
                     exit={{ y: 50, opacity: 0, scale: 0.9 }}
                     transition={{ type: "spring", stiffness: 300, damping: 25 }}
                   >
-                    <EditModal
+                    <EditModalBS
                       data={editItem}
                       onClose={() => setEditItem(null)}
                       onSave={handleSaveEdit}

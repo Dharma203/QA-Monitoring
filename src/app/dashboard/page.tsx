@@ -16,8 +16,11 @@ interface ChartPoint {
 export default function DashboardPage() {
   const { user } = useAuth();
   const [totalData, setTotalData] = useState(0);
-  const [lastInput, setLastInput] = useState("");
+  const [totalUser, setTotalUser] = useState(0);
+  const [lastInputData, setLastInputData] = useState("");
+  const [lastInputUser, setLastInputUser] = useState("");
   const [chartData, setChartData] = useState<ChartPoint[]>([]);
+  const [chartUser, setChartUser] = useState<ChartPoint[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,14 +29,14 @@ export default function DashboardPage() {
 
       setTotalData(json.total || 0);
 
-      if (json.lastInput) {
-        const date = new Date(json.lastInput);
+      if (json.lastInputData) {
+        const date = new Date(json.lastInputData);
         const options: Intl.DateTimeFormatOptions = {
           day: "numeric",
           month: "long",
           year: "numeric",
         };
-        setLastInput(date.toLocaleDateString("id-ID", options));
+        setLastInputData(date.toLocaleDateString("id-ID", options));
       }
 
       if (json.chartData) {
@@ -42,6 +45,31 @@ export default function DashboardPage() {
     };
 
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const res = await fetch("/api/user");
+      const json = await res.json();
+
+      setTotalUser(json.total || 0);
+
+      if (json.lastInputUser) {
+        const date = new Date(json.lastInputUser);
+        const options: Intl.DateTimeFormatOptions = {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        };
+        setLastInputUser(date.toLocaleDateString("id-ID", options));
+      }
+
+      if (json.chartUser) {
+        setChartUser(json.chartUser);
+      }
+    };
+
+    fetchUser();
   }, []);
 
   return (
@@ -58,8 +86,8 @@ export default function DashboardPage() {
 
             {/* Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="bg-green-400 text-white p-4 shadow-md rounded-lg transform transition-transform duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-xl">
-                <p className="text-sm font-medium">Total Data</p>
+              <div className="bg-[#F26A21] text-white p-4 shadow-md rounded-lg transform transition-transform duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-xl">
+                <p className="text-sm font-medium">Total Data QA</p>
                 <p className="text-4xl font-bold">{totalData}</p>
                 <Link
                   href="/data"
@@ -69,16 +97,22 @@ export default function DashboardPage() {
                 </Link>
               </div>
 
-              <div className="bg-indigo-400 text-white p-4 shadow-md rounded-lg transform transition-transform duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-xl">
-                <p className="text-sm font-medium">Input Terakhir</p>
-                <p className="text-4xl font-bold">{lastInput || "-"}</p>
+              <div className="bg-blue-900 text-white p-4 shadow-md rounded-lg transform transition-transform duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-xl">
+                <p className="text-sm font-medium">Total User BS</p>
+                <p className="text-4xl font-bold">{totalUser}</p>
+                <Link
+                  href="/user"
+                  className="underline text-sm mt-2 inline-block"
+                >
+                  Lihat User
+                </Link>
               </div>
             </div>
 
             {/* Chart */}
             <div className="bg-white rounded-md shadow-md p-6">
               <h2 className="text-lg font-semibold mb-4">
-                Grafik Input 7 Hari Terakhir
+                Grafik Input Data QA 7 Hari Terakhir
               </h2>
               <Chart data={chartData} />
             </div>

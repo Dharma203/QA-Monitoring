@@ -92,7 +92,10 @@ export async function POST(request: Request) {
     if (!isNaN(parsed.getTime())) {
       tanggalEntry = parsed;
     } else {
-      return NextResponse.json({ error: "Format tanggal tidak valid" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Format tanggal tidak valid" },
+        { status: 400 }
+      );
     }
   } else {
     tanggalEntry = new Date(); // fallback ke sekarang
@@ -101,15 +104,18 @@ export async function POST(request: Request) {
   const entry = {
     ...body,
     tanggal_entry: tanggalEntry,
-    keterangan_apps: [body.keterangan, body.sistem].filter(Boolean).join(" ").trim(),
+    keterangan_apps: [body.keterangan, body.sistem]
+      .filter(Boolean)
+      .join(" ")
+      .trim(),
     keterangan_detail: [body.keterangan, body.sistem, "User", body.user]
       .filter(Boolean)
       .join(" ")
       .trim(),
+    penginput: body.penginput || "Tidak diketahui",
+    role: body.role || "Tidak diketahui",
   };
-  
 
   const newEntry = await DataEntry.create(entry);
   return NextResponse.json(newEntry);
 }
-

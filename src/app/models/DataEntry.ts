@@ -14,6 +14,8 @@ const DataEntrySchema = new mongoose.Schema(
     atasan: String,
     keterangan_apps: String,
     keterangan_detail: String,
+    penginput: String,
+    role: String,
   },
   { timestamps: true }
 );

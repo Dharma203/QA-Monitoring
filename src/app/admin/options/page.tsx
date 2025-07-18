@@ -60,14 +60,6 @@ export default function DropdownManagementPage() {
     }
   };
 
-  if (!user || user.role !== "superadmin") {
-    return (
-      <p className="p-6 text-red-600 font-medium">
-        ❌ Hanya superadmin yang dapat mengakses halaman ini.
-      </p>
-    );
-  }
-
   return (
     <SuperAdminRoute>
       <div className="flex min-h-screen bg-gray-50">
@@ -102,6 +94,8 @@ export default function DropdownManagementPage() {
                   <option value="sistem">Sistem</option>
                   <option value="penerima">Penerima</option>
                   <option value="atasan">Atasan</option>
+                  <option value="kd_ktr">Kode Kantor</option>
+                  <option value="kd_group">Kode Group</option>
                 </select>
               </div>
 
@@ -131,7 +125,14 @@ export default function DropdownManagementPage() {
               <p className="text-gray-600">🔄 Memuat opsi...</p>
             ) : (
               <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
-                {["keterangan", "sistem", "penerima", "atasan"].map((type) => (
+                {[
+                  "keterangan",
+                  "sistem",
+                  "penerima",
+                  "atasan",
+                  "kd_ktr",
+                  "kd_group",
+                ].map((type) => (
                   <div
                     key={type}
                     className="bg-white rounded shadow-md p-4 transform transition-transform duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-xl"

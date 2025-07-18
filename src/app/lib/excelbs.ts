@@ -22,14 +22,8 @@ export function parseExcel(file: File) {
       const fixed = raw.map((row: any) => {
         const copy = { ...row };
 
-        if (typeof copy.tanggal_form === "number") {
-          copy.tanggal_form = excelDateToISO(copy.tanggal_form);
-        }
-        if (typeof copy.tanggal_eskalasi === "number") {
-          copy.tanggal_eskalasi = excelDateToISO(copy.tanggal_eskalasi);
-        }
-        if (typeof copy.tanggal_entry === "number") {
-          copy.tanggal_entry = excelDateToISO(copy.tanggal_entry);
+        if (typeof copy.tanggal_proses === "number") {
+          copy.tanggal_proses = excelDateToISO(copy.tanggal_proses);
         }
 
         return copy;
@@ -42,40 +36,48 @@ export function parseExcel(file: File) {
   });
 }
 
+// Periksa validitas tanggal sebelum parsing
+function isValidDateValue(value: any): boolean {
+  if (value == null) return false;
+  if (typeof value === "number" && isNaN(value)) return false;
+  return true;
+}
+
 // Bersihkan & isi default jika kosong
 export function sanitizeExcelData(raw: any[]) {
-  return raw
-    .filter((item) => item.keterangan || item.sistem || item.user)
-    .map((item) => ({
-      keterangan: item.keterangan || "",
-      sistem: item.sistem || "",
-      user: item.user || "",
+  return raw.map((item) => {
+    let tanggal_proses = null;
+
+    if (isValidDateValue(item.tanggal_proses)) {
+      if (typeof item.tanggal_proses === "number") {
+        const iso = excelDateToISO(item.tanggal_proses);
+        if (iso) tanggal_proses = new Date(iso).toISOString();
+      } else if (typeof item.tanggal_proses === "string") {
+        const parsed = new Date(item.tanggal_proses);
+        if (!isNaN(parsed.getTime())) {
+          tanggal_proses = parsed.toISOString();
+        }
+      }
+    }
+
+    return {
+      kd_ktr: item.kd_ktr || "",
       code_user: item.code_user || "",
-      penerima: item.penerima || "",
-      atasan: item.atasan || "",
-      tanggal_form: item.tanggal_form
-        ? new Date(item.tanggal_form).toISOString()
-        : null,
-      tanggal_eskalasi: item.tanggal_eskalasi
-        ? new Date(item.tanggal_eskalasi).toISOString()
-        : null,
-      tanggal_entry: item.tanggal_entry
-        ? new Date(item.tanggal_entry).toISOString()
-        : null,
-    }));
+      user: item.user || "",
+      kd_group: item.kd_group || "",
+      nama: item.nama || "",
+      jabatan: item.jabatan || "",
+      petugas: item.petugas || "",
+      tanggal_proses,
+    };
+  });
 }
 
 export function exportToExcel(data: any[], fileName = "export.xlsx") {
   const cleaned = data.map(({ _id, __v, ...rest }) => ({
     ...rest,
-    tanggal_entry: rest.tanggal_entry
-      ? new Date(rest.tanggal_entry).toISOString().slice(0, 10)
-      : "",
-    tanggal_form: rest.tanggal_form
-      ? new Date(rest.tanggal_form).toISOString().slice(0, 10)
-      : "",
-    tanggal_eskalasi: rest.tanggal_eskalasi
-      ? new Date(rest.tanggal_eskalasi).toISOString().slice(0, 10)
+    tanggal_proses: rest.tanggal_proses
+      ? new Date(rest.tanggal_proses).toISOString().slice(0, 10)
       : "",
     penginput: rest.penginput || "Tidak diketahui",
     role: rest.role || "Tidak diketahui",
