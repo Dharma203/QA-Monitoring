@@ -81,10 +81,7 @@ Aplikasi berbasis **Next.js 15** yang digunakan untuk mendata aktivitas layanan,
   ```bash
   npm install
 
-3. Atur environment variables:
-  ```bash
-  cp .env.example .env.local
 
-4. Jalankan server development:
+3. Jalankan server development:
   ```bash
   npm run dev
