@@ -105,7 +105,7 @@ export default function Sidebar() {
                   )}
                 >
                   <User2 size={16} />
-                  Manajemen Admin
+                  Manajemen Pengguna
                 </Link>
                 <Link
                   href="/admin/options"

@@ -52,10 +52,6 @@ export default function ExportButtons({
             className="absolute right-0 bottom-full mb-2 w-56 bg-white border rounded-md shadow-lg z-50 overflow-hidden"
           >
             {/* Export PDF */}
-            <div className="text-xs text-gray-500 px-4 pt-3 pb-1">
-              Export PDF
-            </div>
-
             <motion.button
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -67,28 +63,10 @@ export default function ExportButtons({
               }}
               className="w-full px-4 py-2 text-left text-sm text-black hover:bg-gray-100"
             >
-              Hanya Data Terfilter
-            </motion.button>
-
-            <motion.button
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ delay: 0.1 }}
-              onClick={async () => {
-                setOpen(false);
-                await exportToPDF(allData);
-              }}
-              className="w-full px-4 py-2 text-left text-sm text-black hover:bg-gray-100"
-            >
-              Semua Data
+              Export PDF
             </motion.button>
 
             {/* Export Excel */}
-            <div className="text-xs text-gray-500 px-4 pt-3 pb-1 border-t">
-              Export Excel
-            </div>
-
             <motion.button
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -100,21 +78,7 @@ export default function ExportButtons({
               }}
               className="w-full px-4 py-2 text-left text-sm text-black hover:bg-gray-100"
             >
-              Hanya Data Terfilter
-            </motion.button>
-
-            <motion.button
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ delay: 0.2 }}
-              onClick={() => {
-                setOpen(false);
-                exportToExcel(allData);
-              }}
-              className="w-full px-4 py-2 text-left text-sm text-black hover:bg-gray-100"
-            >
-              Semua Data
+              Export Excel
             </motion.button>
           </motion.div>
         )}

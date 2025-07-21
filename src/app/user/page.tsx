@@ -2,23 +2,24 @@
 
 import { useEffect, useState } from "react";
 import { UserEntryBS } from "../types/user";
-import { parseExcel, sanitizeExcelData } from "../lib/excelbs";
 import InputFormBS from "@/components/InputFormBs";
 import EditModalBS from "@/components/EditModalBs";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { formatDate } from "@/app/lib/date";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
-import { Search, ChevronRight, ChevronLeft } from "lucide-react";
+import { Search, ChevronRight, ChevronLeft, FolderOpen } from "lucide-react";
 import UploadButtonBS from "@/components/UploadButtonBS";
 import ExportButtonsBS from "@/components/ExportButtonBS";
 import InputButtonBS from "@/components/InputButtonBS";
 import { AnimatePresence, motion } from "framer-motion";
 import FilterFormBS from "@/components/FilterButtonBS";
 import Spinner from "@/components/Spinner";
+import { useAuth } from "@/app/context/AuthContext";
 
 export default function UserPage() {
   const [data, setData] = useState<UserEntryBS[]>([]);
+  const { user } = useAuth();
   const [search, setSearch] = useState("");
   const [rawSearch, setRawSearch] = useState("");
   const [editItem, setEditItem] = useState<UserEntryBS | null>(null);
@@ -213,7 +214,6 @@ export default function UserPage() {
                           "Jabatan",
                           "Petugas",
                           "Tanggal Proses",
-                          "Aksi",
                         ].map((title, idx) => (
                           <th
                             key={idx}
@@ -222,107 +222,134 @@ export default function UserPage() {
                             {title}
                           </th>
                         ))}
+                        {(user?.role === "admin" ||
+                          user?.role === "superadmin") && (
+                          <th className="p-2 font-semibold text-gray-700 border-b border-gray-200">
+                            Aksi
+                          </th>
+                        )}
                       </motion.tr>
                     </thead>
                     <tbody>
-                      {getFilteredByDate()
-                        .slice(
-                          (currentPage - 1) * itemsPerPage,
-                          currentPage * itemsPerPage
-                        )
-                        .map((d, index) => (
-                          <motion.tr
-                            key={index}
-                            className="border-t hover:bg-gray-50"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.3, delay: index * 0.1 }}
+                      {getFilteredByDate().length === 0 ? (
+                        <tr>
+                          <td
+                            colSpan={9}
+                            className="text-center text-2xl py-6 text-gray-300"
                           >
-                            <td
-                              className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
-                              style={{
-                                hyphens: "auto",
-                                wordBreak: "break-word",
-                              }}
+                            <div className="flex flex-col items-center justify-center space-y-2">
+                              <FolderOpen className="w-12 h-12" />
+                              <span className="text-lg font-semibold">
+                                Tidak ada data
+                              </span>
+                            </div>
+                          </td>
+                        </tr>
+                      ) : (
+                        getFilteredByDate()
+                          .slice(
+                            (currentPage - 1) * itemsPerPage,
+                            currentPage * itemsPerPage
+                          )
+                          .map((d, index) => (
+                            <motion.tr
+                              key={index}
+                              className="border-t hover:bg-gray-50"
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -10 }}
+                              transition={{ duration: 0.3, delay: index * 0.1 }}
                             >
-                              {d.kd_ktr}
-                            </td>
-                            <td
-                              className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
-                              style={{
-                                hyphens: "auto",
-                                wordBreak: "break-word",
-                              }}
-                            >
-                              {d.code_user}
-                            </td>
-                            <td
-                              className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
-                              style={{
-                                hyphens: "auto",
-                                wordBreak: "break-word",
-                              }}
-                            >
-                              {d.user}
-                            </td>
-                            <td
-                              className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
-                              style={{
-                                hyphens: "auto",
-                                wordBreak: "break-word",
-                              }}
-                            >
-                              {d.kd_group}
-                            </td>
-                            <td
-                              className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
-                              style={{
-                                hyphens: "auto",
-                                wordBreak: "break-word",
-                              }}
-                            >
-                              {d.nama}
-                            </td>
-                            <td
-                              className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
-                              style={{
-                                hyphens: "auto",
-                                wordBreak: "break-word",
-                              }}
-                            >
-                              {d.jabatan}
-                            </td>
-                            <td
-                              className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
-                              style={{
-                                hyphens: "auto",
-                                wordBreak: "break-word",
-                              }}
-                            >
-                              {d.petugas}
-                            </td>
-                            <td className="px-2 py-1 align-top text-center">
-                              {d.tanggal_proses
-                                ? formatDate(d.tanggal_proses)
-                                : "-"}
-                            </td>
-                            <td className="p-2 border-b space-x-2 whitespace-nowrap">
-                              <button
-                                onClick={() => setEditItem(d)}
-                                className="text-blue-600 hover:underline"
+                              <td
+                                className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
+                                style={{
+                                  hyphens: "auto",
+                                  wordBreak: "break-word",
+                                }}
                               >
-                                Edit
-                              </button>
-                              <button
-                                onClick={() => handleDelete(d._id)}
-                                className="text-red-600 hover:underline"
+                                {d.kd_ktr}
+                              </td>
+                              <td
+                                className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
+                                style={{
+                                  hyphens: "auto",
+                                  wordBreak: "break-word",
+                                }}
                               >
-                                Hapus
-                              </button>
-                            </td>
-                          </motion.tr>
-                        ))}
+                                {d.code_user}
+                              </td>
+                              <td
+                                className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
+                                style={{
+                                  hyphens: "auto",
+                                  wordBreak: "break-word",
+                                }}
+                              >
+                                {d.user}
+                              </td>
+                              <td
+                                className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
+                                style={{
+                                  hyphens: "auto",
+                                  wordBreak: "break-word",
+                                }}
+                              >
+                                {d.kd_group}
+                              </td>
+                              <td
+                                className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
+                                style={{
+                                  hyphens: "auto",
+                                  wordBreak: "break-word",
+                                }}
+                              >
+                                {d.nama}
+                              </td>
+                              <td
+                                className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
+                                style={{
+                                  hyphens: "auto",
+                                  wordBreak: "break-word",
+                                }}
+                              >
+                                {d.jabatan}
+                              </td>
+                              <td
+                                className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
+                                style={{
+                                  hyphens: "auto",
+                                  wordBreak: "break-word",
+                                }}
+                              >
+                                {d.petugas}
+                              </td>
+                              <td className="px-2 py-1 align-top text-center">
+                                {d.tanggal_proses
+                                  ? formatDate(d.tanggal_proses)
+                                  : "-"}
+                              </td>
+                              {(user?.role === "admin" ||
+                                user?.role === "superadmin") && (
+                                <td className="p-2 border-b space-x-2 whitespace-nowrap">
+                                  <button
+                                    onClick={() => setEditItem(d)}
+                                    className="text-blue-600 hover:underline"
+                                  >
+                                    Edit
+                                  </button>
+                                  {user?.role === "superadmin" && (
+                                    <button
+                                      onClick={() => handleDelete(d._id)}
+                                      className="text-red-600 hover:underline"
+                                    >
+                                      Hapus
+                                    </button>
+                                  )}
+                                </td>
+                              )}
+                            </motion.tr>
+                          ))
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -416,12 +443,23 @@ export default function UserPage() {
 
               <div className="flex flex-wrap justify-end items-center gap-4 p-4 bg-[#e9f0ff] rounded-xl">
                 <div className="flex gap-2">
-                  <UploadButtonBS onUpload={fetchData} />
-                  <ExportButtonsBS
-                    allData={data}
-                    filteredData={getFilteredByDate()}
-                  />
-                  <InputButtonBS onClick={() => setShowModal(true)} />
+                  {(user?.role === "admin" || user?.role === "superadmin") && (
+                    <>
+                      <UploadButtonBS onUpload={fetchData} />
+                      <ExportButtonsBS
+                        allData={data}
+                        filteredData={getFilteredByDate()}
+                      />
+                      <InputButtonBS onClick={() => setShowModal(true)} />
+                    </>
+                  )}
+
+                  {user?.role !== "admin" && user?.role !== "superadmin" && (
+                    <ExportButtonsBS
+                      allData={data}
+                      filteredData={getFilteredByDate()}
+                    />
+                  )}
                 </div>
               </div>
 

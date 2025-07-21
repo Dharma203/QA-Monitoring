@@ -2,27 +2,52 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/app/lib/mongodb";
 import User from "@/app/models/User";
 
-export async function DELETE(
-  _: NextRequest,
+// GET user by ID
+export async function GET(
+  req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   await connectDB();
 
-  const user = await User.findById(params.id);
-  if (!user) {
+  try {
+    const user = await User.findById(params.id);
+    if (!user) {
+      return NextResponse.json(
+        { error: "User tidak ditemukan" },
+        { status: 404 }
+      );
+    }
+    return NextResponse.json(user);
+  } catch (error) {
     return NextResponse.json(
-      { error: "User tidak ditemukan" },
-      { status: 404 }
+      { error: "Gagal mengambil data user" },
+      { status: 500 }
     );
   }
+}
 
-  if (user.role === "superadmin") {
+// DELETE user by ID
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  await connectDB();
+
+  try {
+    const user = await User.findById(params.id);
+    if (!user) {
+      return NextResponse.json(
+        { error: "User tidak ditemukan" },
+        { status: 404 }
+      );
+    }
+
+    await User.findByIdAndDelete(params.id);
+    return NextResponse.json({ success: true });
+  } catch (error) {
     return NextResponse.json(
-      { error: "Tidak bisa menghapus superadmin" },
-      { status: 403 }
+      { error: "Gagal menghapus user" },
+      { status: 500 }
     );
   }
-
-  await User.findByIdAndDelete(params.id);
-  return NextResponse.json({ success: true });
 }

@@ -2,23 +2,24 @@
 
 import { useEffect, useState } from "react";
 import { DataEntry } from "../types/data";
-import { parseExcel, sanitizeExcelData } from "../lib/excel";
 import InputForm from "@/components/InputForm";
 import EditModal from "@/components/EditModal";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { formatDate } from "@/app/lib/date";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
-import { Search, ChevronRight, ChevronLeft } from "lucide-react";
+import { Search, ChevronRight, ChevronLeft, FolderOpen } from "lucide-react";
 import UploadButton from "@/components/UploadButton";
 import ExportButtons from "@/components/ExportButton";
 import InputButton from "@/components/InputButton";
 import { AnimatePresence, motion } from "framer-motion";
 import FilterForm from "@/components/FilterButton";
 import Spinner from "@/components/Spinner";
+import { useAuth } from "@/app/context/AuthContext";
 
 export default function DataPage() {
   const [data, setData] = useState<DataEntry[]>([]);
+  const { user } = useAuth();
   const [search, setSearch] = useState("");
   const [rawSearch, setRawSearch] = useState("");
   const [editItem, setEditItem] = useState<DataEntry | null>(null);
@@ -122,16 +123,28 @@ export default function DataPage() {
   });
 
   const getFilteredByDate = () => {
-    if (!filter.startDate || !filter.endDate) return filtered;
+    if (!filter.startDate || !filter.endDate) {
+      return filtered.sort(
+        (a, b) =>
+          new Date(b.tanggal_entry).getTime() -
+          new Date(a.tanggal_entry).getTime()
+      );
+    }
 
     const start = new Date(filter.startDate);
     const end = new Date(filter.endDate);
     end.setHours(23, 59, 59, 999);
 
-    return filtered.filter((d) => {
-      const tgl = new Date(d.tanggal_entry);
-      return tgl >= start && tgl <= end;
-    });
+    return filtered
+      .filter((d) => {
+        const tgl = new Date(d.tanggal_entry);
+        return tgl >= start && tgl <= end;
+      })
+      .sort(
+        (a, b) =>
+          new Date(b.tanggal_entry).getTime() -
+          new Date(a.tanggal_entry).getTime()
+      );
   };
 
   const totalPages = Math.ceil(getFilteredByDate().length / itemsPerPage);
@@ -218,7 +231,6 @@ export default function DataPage() {
                           "Atasan",
                           "Apps",
                           "Detail",
-                          "Aksi",
                         ].map((title, idx) => (
                           <th
                             key={idx}
@@ -227,120 +239,145 @@ export default function DataPage() {
                             {title}
                           </th>
                         ))}
+                        {(user?.role === "admin" ||
+                          user?.role === "superadmin") && (
+                          <th className="p-2 font-semibold text-gray-700 border-b border-gray-200">
+                            Aksi
+                          </th>
+                        )}
                       </motion.tr>
                     </thead>
                     <tbody>
-                      {getFilteredByDate()
-                        .slice(
-                          (currentPage - 1) * itemsPerPage,
-                          currentPage * itemsPerPage
-                        )
-                        .map((d, index) => (
-                          <motion.tr
-                            key={index}
-                            className="border-t hover:bg-gray-50"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.3, delay: index * 0.1 }}
+                      {getFilteredByDate().length === 0 ? (
+                        <tr>
+                          <td
+                            colSpan={12}
+                            className="text-center text-2xl py-6 text-gray-300"
                           >
-                            <td className="px-2 py-1 align-top text-center">
-                              {formatDate(d.tanggal_entry)}
-                            </td>
-                            <td className="px-2 py-1 align-top text-center">
-                              {formatDate(d.tanggal_form)}
-                            </td>
-                            <td className="px-2 py-1 align-top text-center">
-                              {formatDate(d.tanggal_eskalasi)}
-                            </td>
-                            <td
-                              className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
-                              style={{
-                                hyphens: "auto",
-                                wordBreak: "break-word",
-                              }}
+                            <div className="flex flex-col items-center justify-center space-y-2">
+                              <FolderOpen className="w-12 h-12" />
+                              <span className="text-lg font-semibold">
+                                Tidak ada data
+                              </span>
+                            </div>
+                          </td>
+                        </tr>
+                      ) : (
+                        getFilteredByDate()
+                          .slice(
+                            (currentPage - 1) * itemsPerPage,
+                            currentPage * itemsPerPage
+                          )
+                          .map((d, index) => (
+                            <motion.tr
+                              key={index}
+                              className="border-t hover:bg-gray-50"
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -10 }}
+                              transition={{ duration: 0.3, delay: index * 0.1 }}
                             >
-                              {d.keterangan}
-                            </td>
-                            <td
-                              className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
-                              style={{
-                                hyphens: "auto",
-                                wordBreak: "break-word",
-                              }}
-                            >
-                              {d.sistem}
-                            </td>
-                            <td
-                              className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
-                              style={{
-                                hyphens: "auto",
-                                wordBreak: "break-word",
-                              }}
-                            >
-                              {d.code_user}
-                            </td>
-                            <td
-                              className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
-                              style={{
-                                hyphens: "auto",
-                                wordBreak: "break-word",
-                              }}
-                            >
-                              {d.user}
-                            </td>
-                            <td
-                              className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
-                              style={{
-                                hyphens: "auto",
-                                wordBreak: "break-word",
-                              }}
-                            >
-                              {d.penerima}
-                            </td>
-                            <td
-                              className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
-                              style={{
-                                hyphens: "auto",
-                                wordBreak: "break-word",
-                              }}
-                            >
-                              {d.atasan}
-                            </td>
-                            <td
-                              className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
-                              style={{
-                                hyphens: "auto",
-                                wordBreak: "break-word",
-                              }}
-                            >
-                              {d.keterangan_apps}
-                            </td>
-                            <td
-                              className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
-                              style={{
-                                hyphens: "auto",
-                                wordBreak: "break-word",
-                              }}
-                            >
-                              {d.keterangan_detail}
-                            </td>
-                            <td className="p-2 border-b space-x-2 whitespace-nowrap">
-                              <button
-                                onClick={() => setEditItem(d)}
-                                className="text-blue-600 hover:underline"
+                              <td className="px-2 py-1 align-top text-center">
+                                {formatDate(d.tanggal_entry)}
+                              </td>
+                              <td className="px-2 py-1 align-top text-center">
+                                {formatDate(d.tanggal_form)}
+                              </td>
+                              <td className="px-2 py-1 align-top text-center">
+                                {formatDate(d.tanggal_eskalasi)}
+                              </td>
+                              <td
+                                className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
+                                style={{
+                                  hyphens: "auto",
+                                  wordBreak: "break-word",
+                                }}
                               >
-                                Edit
-                              </button>
-                              <button
-                                onClick={() => handleDelete(d._id)}
-                                className="text-red-600 hover:underline"
+                                {d.keterangan}
+                              </td>
+                              <td
+                                className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
+                                style={{
+                                  hyphens: "auto",
+                                  wordBreak: "break-word",
+                                }}
                               >
-                                Hapus
-                              </button>
-                            </td>
-                          </motion.tr>
-                        ))}
+                                {d.sistem}
+                              </td>
+                              <td
+                                className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
+                                style={{
+                                  hyphens: "auto",
+                                  wordBreak: "break-word",
+                                }}
+                              >
+                                {d.code_user}
+                              </td>
+                              <td
+                                className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
+                                style={{
+                                  hyphens: "auto",
+                                  wordBreak: "break-word",
+                                }}
+                              >
+                                {d.user}
+                              </td>
+                              <td
+                                className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
+                                style={{
+                                  hyphens: "auto",
+                                  wordBreak: "break-word",
+                                }}
+                              >
+                                {d.penerima}
+                              </td>
+                              <td
+                                className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
+                                style={{
+                                  hyphens: "auto",
+                                  wordBreak: "break-word",
+                                }}
+                              >
+                                {d.atasan}
+                              </td>
+                              <td
+                                className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
+                                style={{
+                                  hyphens: "auto",
+                                  wordBreak: "break-word",
+                                }}
+                              >
+                                {d.keterangan_apps}
+                              </td>
+                              <td
+                                className="px-2 py-1 text-justify align-top hyphens-auto break-words max-w-[150px]"
+                                style={{
+                                  hyphens: "auto",
+                                  wordBreak: "break-word",
+                                }}
+                              >
+                                {d.keterangan_detail}
+                              </td>
+                              {(user?.role === "admin" ||
+                                user?.role === "superadmin") && (
+                                <td className="p-2 border-b space-x-2 whitespace-nowrap">
+                                  <button
+                                    onClick={() => setEditItem(d)}
+                                    className="text-blue-600 hover:underline"
+                                  >
+                                    Edit
+                                  </button>
+                                  <button
+                                    onClick={() => handleDelete(d._id)}
+                                    className="text-red-600 hover:underline"
+                                  >
+                                    Hapus
+                                  </button>
+                                </td>
+                              )}
+                            </motion.tr>
+                          ))
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -434,12 +471,23 @@ export default function DataPage() {
 
               <div className="flex flex-wrap justify-end items-center gap-4 p-4 bg-[#e9f0ff] rounded-xl">
                 <div className="flex gap-2">
-                  <UploadButton onUpload={fetchData} />
-                  <ExportButtons
-                    allData={data}
-                    filteredData={getFilteredByDate()}
-                  />
-                  <InputButton onClick={() => setShowModal(true)} />
+                  {(user?.role === "admin" || user?.role === "superadmin") && (
+                    <>
+                      <UploadButton onUpload={fetchData} />
+                      <ExportButtons
+                        allData={data}
+                        filteredData={getFilteredByDate()}
+                      />
+                      <InputButton onClick={() => setShowModal(true)} />
+                    </>
+                  )}
+
+                  {user?.role !== "admin" && user?.role !== "superadmin" && (
+                    <ExportButtons
+                      allData={data}
+                      filteredData={getFilteredByDate()}
+                    />
+                  )}
                 </div>
               </div>
 
