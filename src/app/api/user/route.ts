@@ -8,40 +8,40 @@ export async function GET() {
     await connectDB();
 
     const now = new Date();
-    const todayStart = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate()
-    );
-    const sevenDaysAgo = new Date(todayStart);
-    sevenDaysAgo.setDate(todayStart.getDate() - 6);
+    const startMonth = new Date(now.getFullYear(), now.getMonth() - 2, 1);
+    const endMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-    const rawData = await UserEntry.find({
-      tanggal_proses: { $gte: sevenDaysAgo },
+    const entries = await UserEntry.find({
+      tanggal_proses: { $gte: startMonth, $lte: endMonth },
     }).select("tanggal_proses");
 
-    const dailyCount: Record<string, number> = {};
-
-    // Inisialisasi count harian 7 hari terakhir
-    for (let i = 0; i < 7; i++) {
-      const d = new Date(todayStart);
-      d.setDate(todayStart.getDate() - (6 - i));
-      const key = d.toISOString().slice(0, 10);
-      dailyCount[key] = 0;
+    const monthlyCount: Record<string, number> = {};
+    for (let i = 0; i < 3; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth() - 2 + i, 1);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}`;
+      monthlyCount[key] = 0;
     }
 
-    rawData.forEach((entry) => {
-      const key = new Date(entry.tanggal_proses).toISOString().slice(0, 10);
-      if (dailyCount[key] !== undefined) {
-        dailyCount[key]++;
+    entries.forEach((entry) => {
+      const date = new Date(entry.tanggal_proses);
+      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}`;
+      if (monthlyCount[key] !== undefined) {
+        monthlyCount[key]++;
       }
     });
 
-    // Format data chart
-    const chartData = Object.entries(dailyCount).map(([date, value]) => {
-      const label = new Date(date).toLocaleDateString("id-ID", {
-        day: "numeric",
+    const chartUser = Object.entries(monthlyCount).map(([key, value]) => {
+      const [year, month] = key.split("-");
+      const date = new Date(parseInt(year), parseInt(month) - 1);
+      const label = date.toLocaleDateString("id-ID", {
         month: "short",
+        year: "numeric",
       });
       return { name: label, value };
     });
@@ -54,7 +54,7 @@ export async function GET() {
     return NextResponse.json({
       total,
       lastInput,
-      chartData,
+      chartUser,
       data: allData,
     });
   } catch (err) {

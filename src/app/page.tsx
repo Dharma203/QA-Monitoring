@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "./context/AuthContext";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -38,7 +39,12 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#EAF0FB] px-4 py-12">
       <div className="flex flex-col md:flex-row-reverse items-center gap-12 max-w-4xl w-full">
-        <div className="flex justify-center md:justify-start w-full md:w-1/2">
+        <motion.div
+          className="flex justify-center md:justify-start w-full md:w-1/2"
+          initial={{ opacity: 0, x: 30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
           <Image
             src="/logo-banklampung.png"
             alt="Bank Lampung"
@@ -46,15 +52,27 @@ export default function LoginPage() {
             height={350}
             priority
           />
-        </div>
+        </motion.div>
         {/* Login Form */}
-        <div className="bg-white rounded-2xl border-1 border-black shadow-[8px_8px_5px_rgba(0,0,0,0.40)] p-8 md:p-10 w-full md:w-1/2">
+        <motion.div
+          className="bg-white rounded-2xl border-1 border-black shadow-[8px_8px_5px_rgba(0,0,0,0.40)] p-8 md:p-10 w-full md:w-1/2"
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
           <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">
             Login
           </h1>
           <form onSubmit={handleLogin} className="space-y-4">
             {error && (
-              <p className="text-red-500 text-sm text-center">{error}</p>
+              <motion.p
+                className="text-red-500 text-sm text-center"
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                {error}
+              </motion.p>
             )}
             <div className="mb-4">
               <label className="block text-gray-700 font-semibold mb-2">
@@ -90,7 +108,7 @@ export default function LoginPage() {
               Login
             </button>
           </form>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

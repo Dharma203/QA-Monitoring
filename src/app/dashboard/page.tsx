@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useAuth } from "@/app/context/AuthContext";
 import Chart from "@/components/LineChart";
+import ChartBS from "@/components/LineChartBS";
 import { motion } from "framer-motion";
 
 interface ChartPoint {
@@ -93,7 +94,7 @@ export default function DashboardPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.2 }}
               >
-                <p className="text-sm font-medium">Total Data QA</p>
+                <p className="text-sm font-medium">Total List Aktivitas User</p>
                 <p className="text-4xl font-bold">{totalData}</p>
                 <Link
                   href="/data"
@@ -109,7 +110,7 @@ export default function DashboardPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.35 }}
               >
-                <p className="text-sm font-medium">Total User BS</p>
+                <p className="text-sm font-medium">Total Nominatif User BS</p>
                 <p className="text-4xl font-bold">{totalUser}</p>
                 <Link
                   href="/user"
@@ -127,10 +128,20 @@ export default function DashboardPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.5 }}
             >
-              <h2 className="text-lg font-semibold mb-4">
-                Grafik Input Data QA 7 Hari Terakhir
-              </h2>
-              <Chart data={chartData} />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h2 className="text-lg font-semibold mb-4">
+                    Grafik List Aktivitas User 7 Hari Terakhir
+                  </h2>
+                  <Chart data={chartData} />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold mb-4">
+                    Grafik Input User BS 3 Bulan Terakhir
+                  </h2>
+                  <ChartBS data={chartUser} />
+                </div>
+              </div>
             </motion.div>
           </main>
         </div>

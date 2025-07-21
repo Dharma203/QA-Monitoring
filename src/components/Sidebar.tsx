@@ -77,7 +77,7 @@ export default function Sidebar() {
               )}
             >
               <Database size={16} />
-              Data QA
+              List Aktivitas User
             </Link>
             <Link
               href="/user"
@@ -89,7 +89,7 @@ export default function Sidebar() {
               )}
             >
               <Users size={16} />
-              User BS
+              Nominatif User BS
             </Link>
 
             {/* Hanya Super Admin */}
