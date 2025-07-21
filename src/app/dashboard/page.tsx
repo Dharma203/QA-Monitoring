@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useAuth } from "@/app/context/AuthContext";
 import Chart from "@/components/LineChart";
+import { motion } from "framer-motion";
 
 interface ChartPoint {
   name: string;
@@ -86,7 +87,12 @@ export default function DashboardPage() {
 
             {/* Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="bg-[#F26A21] text-white p-4 shadow-md rounded-lg transform transition-transform duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-xl">
+              <motion.div
+                className="bg-[#F26A21] text-white p-4 shadow-md rounded-lg transform transition-transform duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-xl"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
+              >
                 <p className="text-sm font-medium">Total Data QA</p>
                 <p className="text-4xl font-bold">{totalData}</p>
                 <Link
@@ -95,9 +101,14 @@ export default function DashboardPage() {
                 >
                   Lihat Data
                 </Link>
-              </div>
+              </motion.div>
 
-              <div className="bg-blue-900 text-white p-4 shadow-md rounded-lg transform transition-transform duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-xl">
+              <motion.div
+                className="bg-blue-900 text-white p-4 shadow-md rounded-lg transform transition-transform duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-xl"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.35 }}
+              >
                 <p className="text-sm font-medium">Total User BS</p>
                 <p className="text-4xl font-bold">{totalUser}</p>
                 <Link
@@ -106,16 +117,21 @@ export default function DashboardPage() {
                 >
                   Lihat User
                 </Link>
-              </div>
+              </motion.div>
             </div>
 
             {/* Chart */}
-            <div className="bg-white rounded-md shadow-md p-6">
+            <motion.div
+              className="bg-white rounded-md shadow-md p-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+            >
               <h2 className="text-lg font-semibold mb-4">
                 Grafik Input Data QA 7 Hari Terakhir
               </h2>
               <Chart data={chartData} />
-            </div>
+            </motion.div>
           </main>
         </div>
       </div>

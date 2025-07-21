@@ -76,11 +76,6 @@ export default function EditModalBS({
             ))}
           </select>
           <input
-            placeholder="Code User"
-            {...register("code_user")}
-            className="border p-2"
-          />
-          <input
             placeholder="User"
             {...register("user")}
             className="border p-2"
@@ -123,11 +118,6 @@ export default function EditModalBS({
               </option>
             ))}
           </select>
-          <input
-            type="date"
-            {...register("tanggal_proses")}
-            className="border p-2"
-          />
         </div>
         <div className="flex justify-between mt-4">
           <button

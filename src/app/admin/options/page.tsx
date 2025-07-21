@@ -5,6 +5,8 @@ import { useAuth } from "@/app/context/AuthContext";
 import SuperAdminRoute from "@/components/SuperAdminRoute";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
+import { motion, AnimatePresence } from "framer-motion";
+import Spinner from "@/components/Spinner";
 
 interface Option {
   _id: string;
@@ -76,9 +78,12 @@ export default function DropdownManagementPage() {
             </h1>
 
             {/* Form Tambah Opsi */}
-            <form
+            <motion.form
               onSubmit={handleAdd}
               className="bg-white p-6 rounded shadow flex flex-wrap items-end gap-4 max-w-3xl"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
             >
               <div className="flex flex-col">
                 <label className="text-sm font-medium text-gray-700">
@@ -119,13 +124,18 @@ export default function DropdownManagementPage() {
               >
                 Tambah
               </button>
-            </form>
+            </motion.form>
 
             {/* List Dropdown per Tipe */}
             {loading ? (
-              <p className="text-gray-600">🔄 Memuat opsi...</p>
+              <Spinner />
             ) : (
-              <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
+              <motion.div
+                className="grid md:grid-cols-2 xl:grid-cols-4 gap-6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              >
                 {[
                   "keterangan",
                   "sistem",
@@ -135,36 +145,47 @@ export default function DropdownManagementPage() {
                   "kd_group",
                   "petugas",
                 ].map((type) => (
-                  <div
+                  <motion.div
                     key={type}
                     className="bg-white rounded shadow-md p-4 transform transition-transform duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-xl"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.1 }}
                   >
                     <h2 className="font-semibold text-gray-700 capitalize mb-3">
                       {type}
                     </h2>
                     <ul className="space-y-2 max-h-64 overflow-y-auto text-sm">
-                      {options
-                        .filter((opt) => opt.type === type)
-                        .map((opt) => (
-                          <li
-                            key={opt._id}
-                            className="flex justify-between items-center border-b pb-1"
-                          >
-                            <span>{opt.value}</span>
-                            <button
-                              onClick={() => handleDelete(opt._id)}
-                              className="text-red-600 text-xs hover:underline"
+                      <AnimatePresence>
+                        {options
+                          .filter((opt) => opt.type === type)
+                          .map((opt, index) => (
+                            <motion.li
+                              key={opt._id}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{
+                                duration: 0.3,
+                                delay: index * 0.1,
+                              }}
+                              className="flex justify-between items-center border-b pb-1"
                             >
-                              Hapus
-                            </button>
-                          </li>
-                        ))}
+                              <span>{opt.value}</span>
+                              <button
+                                onClick={() => handleDelete(opt._id)}
+                                className="text-red-600 text-xs hover:underline"
+                              >
+                                Hapus
+                              </button>
+                            </motion.li>
+                          ))}
+                      </AnimatePresence>
                       {options.filter((opt) => opt.type === type).length ===
                         0 && <li className="text-gray-400 italic">Kosong</li>}
                     </ul>
-                  </div>
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             )}
           </main>
         </div>

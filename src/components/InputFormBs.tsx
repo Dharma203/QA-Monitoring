@@ -34,8 +34,12 @@ export default function InputFormBS({
   }, []);
 
   const onSubmit = async (data: any) => {
+    const today = new Date();
+    const tanggal_proses = today.toISOString();
+
     const payload = {
       ...data,
+      tanggal_proses,
       penginput: user?.username || "Tidak diketahui",
       role: user?.role || "Tidak diketahui",
     };
@@ -80,11 +84,6 @@ export default function InputFormBS({
               ))}
             </select>
             <input
-              placeholder="Code User"
-              {...register("code_user")}
-              className="border p-2"
-            />
-            <input
               placeholder="User"
               {...register("user")}
               className="border p-2"
@@ -127,11 +126,6 @@ export default function InputFormBS({
                 </option>
               ))}
             </select>
-            <input
-              type="date"
-              {...register("tanggal_proses")}
-              className="border p-2"
-            />
           </div>
 
           <div className="flex justify-end mt-6">

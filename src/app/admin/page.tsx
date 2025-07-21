@@ -5,16 +5,21 @@ import SuperAdminRoute from "@/components/SuperAdminRoute";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import { UserPlus, Users } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import Spinner from "@/components/Spinner";
 
 export default function AdminManage() {
   const [users, setUsers] = useState([]);
   const [form, setForm] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const fetchUsers = async () => {
+    setLoading(true);
     const res = await fetch("/api/users");
     const json = await res.json();
     setUsers(json);
+    setLoading(false);
   };
 
   const handleAdd = async () => {
@@ -58,13 +63,29 @@ export default function AdminManage() {
           <Header />
 
           <main className="p-6 space-y-8 bg-[#e9f0ff] h-full text-black sm:pl-70 pt-20">
-            <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+            <motion.h1
+              className="text-2xl font-bold text-gray-800 flex items-center gap-2"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
               <Users className="w-6 h-6 text-blue-600" /> Manajemen Admin
-            </h1>
+            </motion.h1>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <motion.div
+              className="grid md:grid-cols-2 gap-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+            >
               {/* Card Tambah Admin */}
-              <div className="bg-white p-6 rounded-lg shadow-md">
+              <motion.div
+                className="bg-white p-6 rounded-lg shadow-md"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+              >
                 <h2 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
                   <UserPlus className="w-5 h-5 text-green-600" />
                   Tambah Admin
@@ -88,20 +109,28 @@ export default function AdminManage() {
                     }
                     className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
                   />
-                  <button
+                  <motion.button
                     onClick={handleAdd}
+                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.03 }}
                     className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition font-medium"
                   >
                     Tambah Admin
-                  </button>
+                  </motion.button>
                   {error && (
                     <p className="text-red-600 text-sm font-medium">{error}</p>
                   )}
                 </div>
-              </div>
+              </motion.div>
 
               {/* Card Tabel Admin */}
-              <div className="bg-white p-6 rounded-lg shadow-md">
+              <motion.div
+                className="bg-white p-6 rounded-lg shadow-md"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+              >
                 <h2 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
                   📋 Daftar Admin
                 </h2>
@@ -122,26 +151,42 @@ export default function AdminManage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {users.map((u: any) => (
-                        <tr
-                          key={u._id}
-                          className="border-b hover:bg-gray-50 transition"
-                        >
-                          <td className="px-4 py-2">{u.username}</td>
-                          <td className="px-4 py-2 capitalize">{u.role}</td>
-                          <td className="px-4 py-2">
-                            <button
-                              onClick={() => handleDelete(u._id)}
-                              className={`text-red-600 hover:underline text-sm disabled:text-gray-400`}
-                              disabled={u.role === "superadmin"}
-                            >
-                              {u.role === "superadmin"
-                                ? "Tidak bisa hapus"
-                                : "Hapus"}
-                            </button>
+                      {loading ? (
+                        <tr>
+                          <td colSpan={3}>
+                            <Spinner />
                           </td>
                         </tr>
-                      ))}
+                      ) : (
+                        <AnimatePresence initial={false}>
+                          {users.map((u: any, i: number) => (
+                            <motion.tr
+                              key={u._id}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{
+                                duration: 0.3,
+                                delay: i * 0.1,
+                              }}
+                              className="border-b hover:bg-gray-50 transition"
+                            >
+                              <td className="px-4 py-2">{u.username}</td>
+                              <td className="px-4 py-2 capitalize">{u.role}</td>
+                              <td className="px-4 py-2">
+                                <button
+                                  onClick={() => handleDelete(u._id)}
+                                  className={`text-red-600 hover:underline text-sm disabled:text-gray-400`}
+                                  disabled={u.role === "superadmin"}
+                                >
+                                  {u.role === "superadmin"
+                                    ? "Tidak bisa hapus"
+                                    : "Hapus"}
+                                </button>
+                              </td>
+                            </motion.tr>
+                          ))}
+                        </AnimatePresence>
+                      )}
                     </tbody>
                   </table>
                   {users.length === 0 && (
@@ -150,8 +195,8 @@ export default function AdminManage() {
                     </p>
                   )}
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </main>
         </div>
       </div>

@@ -43,6 +43,15 @@ function isValidDateValue(value: any): boolean {
   return true;
 }
 
+// Format code_user jadi 7 digit
+function formatCodeUser(raw: any): string {
+  const str = String(raw).trim();
+  if (/^\d{7}$/.test(str)) return str; // sudah 7 digit valid
+  const num = parseInt(str);
+  if (isNaN(num)) return "0000000";
+  return String(num).padStart(7, "0");
+}
+
 // Bersihkan & isi default jika kosong
 export function sanitizeExcelData(raw: any[]) {
   return raw.map((item) => {
@@ -62,7 +71,7 @@ export function sanitizeExcelData(raw: any[]) {
 
     return {
       kd_ktr: item.kd_ktr || "",
-      code_user: item.code_user || "",
+      code_user: formatCodeUser(item.code_user),
       user: item.user || "",
       kd_group: item.kd_group || "",
       nama: item.nama || "",

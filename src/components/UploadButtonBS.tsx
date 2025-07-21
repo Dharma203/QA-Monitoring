@@ -49,7 +49,7 @@ export default function UploadButtonBS({ onUpload }: { onUpload: () => void }) {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-semibold text-sm shadow"
+        className="bg-blue-600 hover:bg-blue-700 h-10 text-white px-6 py-2 rounded-md font-semibold text-sm shadow flex items-center"
       >
         Upload
       </button>

@@ -84,9 +84,21 @@ export async function POST(req: Request) {
 
   await connectDB();
 
+  let newCodeUser = "-";
+
+  if (!body.code_user || body.code_user === "-") {
+    const lastEntry = await UserEntry.findOne().sort({ tanggal_proses: -1 });
+    const lastCode = lastEntry?.code_user || "0000000";
+    const match = lastCode.match(/^(\d{7})$/);
+    const nextNumber = match ? parseInt(match[1]) + 1 : 1;
+    newCodeUser = String(nextNumber).padStart(7, "0");
+  } else {
+    newCodeUser = body.code_user;
+  }
+
   const entry: any = {
     kd_ktr: body.kd_ktr || "-",
-    code_user: body.code_user || "-",
+    code_user: newCodeUser,
     user: body.user || "-",
     kd_group: body.kd_group || "-",
     nama: body.nama || "-",
